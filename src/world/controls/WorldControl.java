@@ -210,4 +210,9 @@ public class WorldControl implements java.io.Serializable
 			return mini.render();
 		}
 	}
+	public void updateRender()
+	{
+		WorldPanel panel = (WorldPanel) frame.getPanel();
+		panel.Render();
+	}
 }

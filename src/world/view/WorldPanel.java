@@ -164,18 +164,8 @@ public class WorldPanel extends JPanel
 				else if (room.getTile(new Dimension(getX, getY)).gethasMonster())
 				{
 					Color color = Color.black;
-					if(room.getTile(new Dimension(getX, getY)).getMonsterType()==0)
-					{
-						color = Color.green;
-					}
-					if(room.getTile(new Dimension(getX, getY)).getMonsterType()==1)
-					{
-						color = Color.blue;
-					}
-					if(room.getTile(new Dimension(getX, getY)).getMonsterType()==2)
-					{
-						color = Color.ORANGE;
-					}
+					color = room.getTile(new Dimension(getX,getY)).getMonsterType().getColor();
+					
 					for (int x = 0; x < block; x++)
 					{
 						for (int y = 0; y < block; y++)
@@ -217,7 +207,7 @@ public class WorldPanel extends JPanel
 						drawx += ((width-(int)mini.getWidth())/2);
 						drawy += ((height-(int)mini.getHeight())/2);
 					}
-						map.setRGB(drawx, drawy, mini.getRGB(x2, y2));
+
 
 					
 
@@ -247,7 +237,7 @@ public class WorldPanel extends JPanel
 		return mapImage;
 	}
 
-	public void redraw(Room room)
+	private void redraw(Room room)
 	{
 		this.remove(worldView);
 		worldView = new JLabel();

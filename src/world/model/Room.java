@@ -1,8 +1,11 @@
 package world.model;
 
 import java.awt.Dimension;
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import world.controls.WorldControl;
 
@@ -15,6 +18,8 @@ public class Room implements java.io.Serializable
 	private int restAmount;
 	private Random rand;
 	private boolean discovered;
+	private transient Timer timer;
+	Room room = this;
 
 	public Room(ArrayList<Tile> interior, Dimension roomDimension,WorldControl control)
 	{
@@ -24,6 +29,7 @@ public class Room implements java.io.Serializable
 		ambushChance = 0.1;
 		restAmount =1;
 		rand = new Random();
+		timer = new Timer();
 	}
 	
 	public void resetRest()
@@ -99,6 +105,8 @@ public class Room implements java.io.Serializable
 			Dimension nextPosition = new Dimension(currentPos.width + direction[0], currentPos.height + direction[1]);
 			if (getTile(currentPos).getIsExit()&&getTile(currentPos).getDoorDirection()[0]==direction[0]&&getTile(currentPos).getDoorDirection()[1]==direction[1])
 			{
+				//stop timer
+				timer.cancel();
 				control.updateMap(getTile(currentPos).getDoorDirection(), currentPos);
 			} else
 			{
@@ -151,11 +159,48 @@ public class Room implements java.io.Serializable
 		{
 			discovered = true;
 		}
+		//start monster timer
+		timer.schedule(updateMonsters,5*1000, 5 *1000);
 	}
 	public boolean isDiscovered()
 	{
 		return discovered;
 	}
+	
+	TimerTask updateMonsters = new TimerTask(){
+
+		@Override
+		public void run()
+		{
+			ArrayList<Monster> movedMonsters = new ArrayList<Monster>();
+			System.out.println("move");
+			for (int getX = 1; getX <= ((int) roomDimension.getWidth()); getX++)
+			{
+				for (int getY = 1; getY <= ((int) roomDimension.getHeight()); getY++)
+				{
+					//System.out.println(getX+","+getY);
+					if (getTile(new Dimension(getX, getY)).gethasMonster())
+					{
+						Dimension attemptMove = getTile(new Dimension(getX, getY)).getMonsterType().move(room,new Dimension(getX,getY));
+						if(attemptMove!= null&&!getTile(new Dimension(getX, getY)).getMonsterType().hasMoved)
+						{
+							System.out.println("starts:"+getX+","+getY+"\nEnds:"+attemptMove);
+							Monster monster = getTile(new Dimension(getX, getY)).getMonsterType();
+							monster.hasMoved = true;
+							movedMonsters.add(monster);
+							getTile(new Dimension(getX, getY)).setHasMonster(false);
+							getTile(new Dimension(getX, getY)).setMonsterType(null);
+							getTile(attemptMove).setHasMonster(true);
+							getTile(attemptMove).setMonsterType(monster);
+						}
+					}
+				}
+				
+			}
+			for(Monster monster : movedMonsters)
+			{monster.setHasMoved(false);}
+			control.updateRender();
+		}};
 		
 	
 }

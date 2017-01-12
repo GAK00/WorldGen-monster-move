@@ -35,17 +35,19 @@ public abstract class Tile implements java.io.Serializable
 			this.hasMonster = true;
 
 			int detirminate = rand.nextInt(10) + 1;
+			Dimension updatePos = new Dimension((int)pos.getWidth()+1,(int)pos.getHeight()+1);
 			if (detirminate <= 5)
 			{
-				Troll troll = new Troll();
+				
+				Troll troll = new Troll(updatePos);
 				monsterType = troll;
 			} else if (detirminate <= 8)
 			{
-				Troll troll = new Troll();
+				Troll troll = new Troll(updatePos);
 				monsterType = troll;
 			} else
 			{
-				Troll troll = new Troll();
+				Troll troll = new Troll(updatePos);
 				monsterType = troll;
 			}
 		} else
@@ -106,6 +108,10 @@ public abstract class Tile implements java.io.Serializable
 	public void setInhabited(boolean isInhabited)
 	{
 		this.isInhabited = isInhabited;
+	}
+	public void setMonsterType(Monster monster)
+	{
+		this.monsterType = monster;
 	}
 
 }
